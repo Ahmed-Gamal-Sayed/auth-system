@@ -80,7 +80,7 @@ export default function Signin() {
               </div>
               {passwordError && (<p className="error">{passwordError}</p>)}
 
-              <a href='/forgetpassword' className='forgetPassword'>Forget Password?</a>
+              <a href='/forget-password' className='forgetPassword'>Forget Password?</a>
 
               {error && (<p className="error">{error}</p>)}
               <button type="submit" className="btn-submit">{loading ? "Signning in..." : "Sign in"}</button>

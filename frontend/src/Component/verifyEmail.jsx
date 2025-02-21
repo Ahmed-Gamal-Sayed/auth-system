@@ -1,6 +1,8 @@
 import { useRef, useState } from "react";
 import { useAuth } from "../Context/authContext";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
 
 
 export default function VerifyEmail() {
@@ -57,6 +59,7 @@ export default function VerifyEmail() {
     try {
       await VerifyEmail(verifyCode);
       setLoading(false);
+      toast.success("Email verified successfully");
       nav('/changepassword');
     } catch (err) {
       setLoading(false);

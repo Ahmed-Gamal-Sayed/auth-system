@@ -44,8 +44,16 @@ export const checkUserTable = async () => {
 
 export const setNewUser = async (userData) => {
     const query = `
-        INSERT INTO users (fullname, email, password, verificationToken, verificationTokenExpiresAt)
-        VALUES (?, ?, ?, ?, ?)
+        INSERT INTO users (
+            fullname,
+            email,
+            password,
+            resetPasswordToken,
+            resetPasswordExpiresAt,
+            verificationToken,
+            verificationTokenExpiresAt
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
 
     try {
@@ -53,6 +61,8 @@ export const setNewUser = async (userData) => {
             userData.fullname,
             userData.email,
             userData.password,
+            userData.resetPasswordToken,
+            userData.resetPasswordExpiresAt,
             userData.verificationToken,
             userData.verificationTokenExpiresAt,
         ]);
@@ -60,7 +70,10 @@ export const setNewUser = async (userData) => {
         console.log('✅ User inserted with ID:', result.insertId);
         return result.length > 0 ? true : false;
     } catch (error) {
-        console.error('❌ Error inserting user:', error.message);
+        if (error.code === "ER_DUP_ENTRY") {
+            return { success: false, message: "❌ رمز إعادة تعيين كلمة المرور مستخدم بالفعل، يرجى المحاولة مرة أخرى!" };
+        }
+        console.error("❌ Error inserting user:", error.message);
         throw error;
     }
 };
@@ -112,6 +125,28 @@ export const updateUser = async (colName, newValue, email) => {
         if (!allCol.includes(colName)) { throw new Error(`❌ Invalid column name: ${colName}`); }
 
         const query = `UPDATE users SET ${colName} = ? WHERE email = ?`;
+        const [result] = await db.execute(query, [newValue, email]);
+        return result.affectedRows === 0 ? true : false;
+    } catch (error) {
+        console.error("❌ Error updating column:", error.message);
+        throw error;
+    }
+};
+
+export const setLastLogin = async (email) => {
+    try {
+        const query = `UPDATE users SET lastLogin = CURRENT_TIMESTAMP WHERE email = ?`;
+        const [result] = await db.execute(query, [email]);
+        return result.affectedRows === 0 ? true : false;
+    } catch (error) {
+        console.error("❌ Error updating column:", error.message);
+        throw error;
+    }
+};
+
+export const setisVerified = async (newValue, email) => {
+    try {
+        const query = `UPDATE users SET isVerified = ? WHERE email = ?`;
         const [result] = await db.execute(query, [newValue, email]);
         return result.affectedRows === 0 ? true : false;
     } catch (error) {

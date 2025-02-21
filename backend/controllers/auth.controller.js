@@ -9,7 +9,7 @@ import {
     sendVerificationEmail,
     sendWelcomeEmail,
 } from "../mailtrap/emails.js";
-import { setNewUser, getUser, updateUser, findUserByResetToken, findUserByVerifiy } from "../database/UserTable.js";
+import { setNewUser, getUser, updateUser, findUserByResetToken, findUserByVerifiy, setLastLogin, setisVerified } from "../database/UserTable.js";
 
 dotenv.config();
 
@@ -64,7 +64,7 @@ export const signup = async (req, res) => {
         }
 
         const userAlreadyExists = await getUser('email', email);
-        console.log("userAlreadyExists", userAlreadyExists);
+        // console.log("userAlreadyExists", userAlreadyExists);
 
         if (userAlreadyExists) {
             return res.status(400).json({ success: false, message: "User already exists" });
@@ -72,15 +72,21 @@ export const signup = async (req, res) => {
 
         const hashedPassword = await hashPassword(password);
         const verificationToken = Math.floor(100000 + Math.random() * 900000).toString();
+        const generateToken = () => crypto.randomBytes(32).toString("hex");
+
         const userData = {
             fullname,
             email,
             password: hashedPassword,
+            resetPasswordToken: generateToken(),
+            resetPasswordExpiresAt: new Date(Date.now() + 3600000),
             verificationToken,
-            verificationTokenExpiresAt: Date.now() + 1 * 60 * 60 * 1000, // 1 hours
+            verificationTokenExpiresAt: new Date(Date.now() + 3600000),
         };
 
-        await setNewUser(userData);
+        setNewUser(userData).then((response) => console.log(response));
+        await setLastLogin(email);
+        await setisVerified(1, email);
         const user = await getUser('email', email);
 
         generateTokenAndSetCookie(res, user.id);
@@ -90,9 +96,13 @@ export const signup = async (req, res) => {
             success: true,
             message: "User created successfully",
             user: {
-                fullname: fullname,
-                email: email,
+                fullname: user.fullname,
+                email: user.email,
                 password: undefined,
+                lastLogin: user.lastLogin,
+                isVerified: user.isVerified,
+                role: user.role,
+                status: user.status,
             },
         });
     } catch (error) {
@@ -108,18 +118,22 @@ export const verifyEmail = async (req, res) => {
         if (!user) {
             return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
         }
-        await updateUser('isVerified', 1, user.email);
+        await setisVerified(1, user.email);
         await updateUser('verificationToken', undefined, user.email);
         await updateUser('verificationTokenExpiresAt', undefined, user.email);
         await sendWelcomeEmail(user.email, user.fullname);
 
-        res.status(200).json({
+        res.status(201).json({
             success: true,
-            message: "Email verified successfully",
+            message: "Verifications Email successfully...",
             user: {
                 fullname: user.fullname,
-                email: email,
+                email: user.email,
                 password: undefined,
+                lastLogin: user.lastLogin,
+                isVerified: user.isVerified,
+                role: user.role,
+                status: user.status,
             },
         });
     } catch (error) {
@@ -131,25 +145,42 @@ export const verifyEmail = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body;
     try {
-        const user = await getUser('email', email);
-        if (!user) {
+        const selectUser = await getUser('email', email);
+        if (!selectUser) {
             return res.status(400).json({ success: false, message: "Invalid credentials" });
         }
-        const isPasswordValid = await comparePassword(password, user.password);
+        const isPasswordValid = await comparePassword(password, selectUser.password);
         if (!isPasswordValid) {
             return res.status(400).json({ success: false, message: "Invalid credentials" });
         }
 
-        generateTokenAndSetCookie(res, user.id);
-        await updateUser('lastLogin', Date.now(), email);
+        generateTokenAndSetCookie(res, selectUser.id);
+        const lLogin = await setLastLogin(email);
+        if (!lLogin) {
+            console.log('last login is not update');
+        }
 
-        res.status(200).json({
+        const verify = await setisVerified(1, email);
+        if (!verify) {
+            console.log('is verify not update');
+        }
+
+        const user = await getUser('email', email);
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid credentials" });
+        }
+
+        res.status(201).json({
             success: true,
-            message: "Logged in successfully",
+            message: "logging in successfull...",
             user: {
                 fullname: user.fullname,
-                email: email,
+                email: user.email,
                 password: undefined,
+                lastLogin: user.lastLogin,
+                isVerified: user.isVerified,
+                role: user.role,
+                status: user.status,
             },
         });
     } catch (error) {
@@ -159,6 +190,9 @@ export const login = async (req, res) => {
 };
 
 export const logout = async (req, res) => {
+    const { email } = req.body;
+
+    await setisVerified(0, email);
     res.clearCookie("token");
     res.status(200).json({ success: true, message: "Logged out successfully" });
 };
@@ -172,7 +206,7 @@ export const forgotPassword = async (req, res) => {
         }
 
         // Generate reset token
-        const resetToken = crypto.randomBytes(20).toString("hex");
+        const resetToken = crypto.randomBytes(32).toString("hex");
         const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
         await updateUser('resetPasswordToken', resetToken, email);
         await updateUser('resetPasswordExpiresAt', resetTokenExpiresAt, email)

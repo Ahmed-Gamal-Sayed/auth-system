@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../Context/authContext";
 import { useNavigate } from 'react-router-dom';
-
+import { motion } from "framer-motion";
 
 export default function ForgetPassword() {
   const [email, setEmail] = useState(null);
@@ -27,7 +27,6 @@ export default function ForgetPassword() {
     try {
       await forgetPassword(email);
       setLoading(false);
-      nav('/verify-email');
     } catch (err) {
       setLoading(false);
       setError(resError);

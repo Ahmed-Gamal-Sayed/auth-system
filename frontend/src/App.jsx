@@ -64,7 +64,7 @@ export default function App() {
                     />
                     <Route path='/verify-email' element={<VerifyEmail />} />
                     <Route
-                        path='/forgot-password'
+                        path='/forget-password'
                         element={
                             <RedirectAuthenticatedUser>
                                 <ForgetPassword />
