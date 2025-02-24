@@ -1,0 +1,221 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: none;
+  border-radius: 0;
+  overflow: hidden;
+  background: none;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  user-select: none;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(#011d0c, #034a20, #011d0c);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.notFound {
+  width: auto;
+  height: auto;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #000;
+  text-align: center;
+  padding: 10px;
+}
+
+.success {
+  color: #43ea87;
+  text-align: center;
+  font-size: 15px;
+  margin: 5px 0px;
+}
+
+.error {
+  color: #f00;
+  text-align: center;
+  font-size: 15px;
+  margin: 5px 0px;
+}
+
+.content {
+  width: 30vw;
+  height: auto;
+  background: #000;
+  opacity: 0.7;
+  padding: 15px 30px;
+}
+
+.div-link {
+  width: 30vw;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+}
+
+.title {
+  padding: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  color: #0ad547;
+}
+
+.input-content {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.input-field {
+  width: 100%;
+  height: auto;
+  padding: 6px;
+  background-color: #000;
+  border: 2px solid #0ad547;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 10px 10px 40px;
+  cursor: text;
+}
+
+.icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0ad547;
+  font-size: 20px;
+}
+
+
+
+
+
+
+
+
+
+.forgetPassword {
+  display: block;
+  text-align: end;
+  margin: 0px 15px;
+  text-decoration: none;
+  margin-bottom: 15px;
+}
+
+.btn-submit {
+  width: 100%;
+  height: auto;
+  padding: 6px;
+  cursor: pointer;
+  background-color: #000;
+  border: 2px solid #0ad547;
+  color: #0ad547;
+  border-radius: 10px;
+  transition: 0.5s;
+}
+
+.btn-submit:hover {
+  background: #0ad547;
+  color: #000;
+}
+
+.signup-link {
+  width: 100%;
+  height: auto;
+  color: #fff;
+  text-align: center;
+  margin-top: 15px;
+}
+
+.signup-link a {
+  text-decoration: none;
+}
+
+.container {
+  margin: 20px 0px;
+  text-align: center;
+  color: #fff;
+}
+
+.link {
+  text-decoration: none;
+  margin: 10px 20px;
+  margin-bottom: 30px;
+  padding: 0px 6px;
+  color: #0ad547;
+}
+
+.link:hover {
+  border-bottom: 3px #0ad547 solid;
+}
+
+.p-verify {
+  color: #0ad547;
+  text-align: center;
+}
+
+.code {
+  width: 40px;
+  height: 40px;
+  padding: 3px;
+  text-align: center;
+  margin-bottom: 20px;
+  background-color: #000;
+  border: 1px solid #0ad547;
+  color: #fff;
+  cursor: text;
+}
+
+
+/* For Extra Large Screens (1200px and above) */
+@media (min-width: 1200px) {
+  .content {
+    width: 30vw;
+  }
+}
+
+/* For Large Screens (1025px to 1199px) */
+@media (min-width: 1025px) and (max-width: 1199px) {
+  .content {
+    width: 60vw;
+  }
+}
+
+/* For Tablets (769px to 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .content {
+    width: 60vw;
+  }
+}
+
+/* For Mobile Screens (up to 768px) */
+@media (max-width: 768px) {
+  .content {
+    width: 80vw;
+  }
+}
+
+/* For Mobile Screens (up to 480px) */
+@media (max-width: 480px) {
+  .content {
+    width: 100%;
+    height: 100vh;
+  }
+}
