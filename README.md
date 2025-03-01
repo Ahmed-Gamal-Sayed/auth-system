@@ -31,10 +31,7 @@ About This Course:
 ```bash
 PORT=4000
 
-DB_HOST=localhost
-DB_USERNAME=root
-DB_PASSWORD=''
-DB_NAME=verification_system
+DATABASE_URL="mysql://root:@localhost:3306/verification_system"
 
 MAILTRAP_HOST=live.smtp.mailtrap.io
 MAILTRAP_PORT=587
